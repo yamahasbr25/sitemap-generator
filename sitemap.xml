@@ -14,7 +14,7 @@ def generate_random_date():
 
 def create_sitemap():
     kw_file = "kw.txt"
-    sitemap_file = "sitemap.xml"
+    sitemap_file = "sitemap.xml"  # Bisa diganti dengan "sitemap_index.xml" jika perlu
     base_url = "https://yamahasbr25.github.io/sitemap-generator/"
     
     if not os.path.exists(kw_file):
@@ -42,13 +42,13 @@ def create_sitemap():
         priority.text = "0.8"
     
     tree = ET.ElementTree(urlset)
-    with open(sitemap_file, "wb") as f:
-        tree.write(f, encoding="utf-8", xml_declaration=True)
     
-    # Debugging output to verify XML correctness
-    ET.dump(urlset)
+    # Menulis XML dengan header deklarasi yang valid
+    with open(sitemap_file, "w", encoding="utf-8") as f:
+        f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
+        tree.write(f, encoding="unicode")
     
-    print(f"{sitemap_file} berhasil diperbarui.")
+    print(f"{sitemap_file} berhasil diperbarui dan valid.")
 
 if __name__ == "__main__":
     create_sitemap()
