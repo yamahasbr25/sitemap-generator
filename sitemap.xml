@@ -1,1 +1,48 @@
+import os
+import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta
+import random
+import urllib.parse
+
+def generate_slug(title):
+    return urllib.parse.quote(title.replace(" ", "-"))
+
+def generate_random_date():
+    start_date = datetime(2023, 1, 1)
+    random_days = random.randint(0, 365)
+    return (start_date + timedelta(days=random_days)).strftime('%Y-%m-%d')
+
+def create_sitemap():
+    kw_file = "kw.txt"
+    sitemap_file = "sitemap.xml"
+    base_url = "https://yamahasbr25.github.io/sitemap-generator/"
+    
+    if not os.path.exists(kw_file):
+        print(f"File {kw_file} tidak ditemukan.")
+        return
+    
+    with open(kw_file, "r", encoding="utf-8") as f:
+        titles = [line.strip() for line in f if line.strip()]
+    
+    urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    
+    for title in titles:
+        url = ET.SubElement(urlset, "url")
+        loc = ET.SubElement(url, "loc")
+        loc.text = f"{base_url}{generate_slug(title)}/"
+        lastmod = ET.SubElement(url, "lastmod")
+        lastmod.text = generate_random_date()
+        changefreq = ET.SubElement(url, "changefreq")
+        changefreq.text = "daily"
+        priority = ET.SubElement(url, "priority")
+        priority.text = "0.8"
+    
+    tree = ET.ElementTree(urlset)
+    with open(sitemap_file, "wb") as f:
+        tree.write(f, encoding="utf-8", xml_declaration=True)
+    
+    print(f"{sitemap_file} berhasil diperbarui.")
+
+if __name__ == "__main__":
+    create_sitemap()
 
